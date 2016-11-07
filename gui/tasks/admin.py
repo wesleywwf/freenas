@@ -83,6 +83,43 @@ class CloudSyncFAdmin(BaseFreeAdmin):
         return columns
 
 
+class CloudRestoreFAdmin(BaseFreeAdmin):
+
+    icon_model = u"cronJobIcon"
+    icon_object = u"cronJobIcon"
+    icon_add = u"AddcronJobIcon"
+    icon_view = u"ViewcronJobIcon"
+    exclude_fields = (
+        'id',
+        'attributes',
+    )
+    menu_child_of = 'tasks'
+    refresh_time = 12000
+
+    def get_actions(self):
+        actions = super(CloudRestoreFAdmin, self).get_actions()
+        actions['RunNow'] = {
+            'button_name': _('Run Now'),
+            'on_click': """function() {
+                var mybtn = this;
+                for (var i in grid.selection) {
+                    var data = grid.row(i).data;
+                    editObject('%s', data._run_url, [mybtn,]);
+                }
+            }""" % (escapejs(_('Run Now')), ),
+        }
+        return actions
+
+    def get_datagrid_columns(self):
+        columns = super(CloudRestoreFAdmin, self).get_datagrid_columns()
+        columns.insert(3, {
+            'name': 'status',
+            'label': _('Status'),
+            'sortable': False,
+        })
+        return columns
+
+
 class CronJobFAdmin(BaseFreeAdmin):
 
     icon_model = u"cronJobIcon"
@@ -192,6 +229,7 @@ class SMARTTestFAdmin(BaseFreeAdmin):
         return columns
 
 site.register(models.CloudSync, CloudSyncFAdmin)
+site.register(models.CloudRestore, CloudRestoreFAdmin)
 site.register(models.CronJob, CronJobFAdmin)
 site.register(models.Rsync, RsyncFAdmin)
 site.register(models.SMARTTest, SMARTTestFAdmin)

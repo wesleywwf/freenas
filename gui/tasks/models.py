@@ -164,6 +164,42 @@ class CloudSync(Model):
         return jid
 
 
+class CloudRestore(Model):
+    path = PathField(
+        verbose_name=_("Path"),
+        abspath=False,
+    )
+    credential = models.ForeignKey(
+        'system.CloudCredentials',
+        verbose_name=_('Credential'),
+    )
+    attributes = DictField(
+        editable=False,
+    )
+    last_status = models.CharField(
+        max_length=200,
+        editable=False,
+        default='',
+    )
+
+    class Meta:
+        verbose_name = _(u"Cloud Restore")
+        verbose_name_plural = _(u"Cloud Restore")
+        ordering = ["path"]
+
+    def __unicode__(self):
+        return self.path
+
+    def run(self):
+        with client as c:
+            jid = c.call('backup.restore', {
+                'credential': self.credential.id,
+                'attributes': self.attributes,
+                'path': self.path,
+            })
+        return jid
+
+
 class CronJob(Model):
     cron_user = UserField(
         max_length=60,

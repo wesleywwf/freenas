@@ -35,6 +35,13 @@ class TasksHook(AppHook):
 
         if not notifier().is_freenas():
             tabs.insert(0, {
+                'name': 'CloudRestore',
+                'focus': 'tasks.CloudRestore.View',
+                'verbose_name': _('Cloud Restore'),
+                'url': reverse('freeadmin_tasks_cloudrestore_datagrid'),
+            })
+
+            tabs.insert(1, {
                 'name': 'CloudSync',
                 'focus': 'tasks.CloudSync.View',
                 'verbose_name': _('Cloud Sync'),
